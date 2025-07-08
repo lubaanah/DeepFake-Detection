@@ -55,7 +55,8 @@ pip install -r requirements.txt
 
     3. python app.py
 
-📜 License
+📜 License:
+
 Licensed under the MIT License. Use it, learn from it, remix it — just give credit where it’s due.
 
 📝 Future Scope
@@ -67,9 +68,11 @@ Add real-time webcam deepfake detection
 
 User authentication system
 
+
 🤝 Acknowledgements
 Built with the support of AI tools: ChatGPT & Grok
 Thanks to open-source tools, documentation, and the ML/dev community
 
 Project by lubaanah
+
 @lubaanah
