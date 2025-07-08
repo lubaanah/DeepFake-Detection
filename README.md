@@ -46,7 +46,7 @@ deepfake-detection/
 
 1. Clone the repo:
    bash:
-      1. git clone https://github.com/lubaanah/deepfake-detection
+      1. git clone https://github.com/lubaanah/DeepFake-Detection
 cd deepfake-detection
 
     2. python -m venv venv
@@ -74,5 +74,3 @@ Built with the support of AI tools: ChatGPT & Grok
 Thanks to open-source tools, documentation, and the ML/dev community
 
 Project by lubaanah
-
-@lubaanah
