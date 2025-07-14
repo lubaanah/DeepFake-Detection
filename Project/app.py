@@ -63,7 +63,7 @@ if os.path.exists(model_path):
     with open(model_path, 'rb') as file:
         model = pickle.load(file)
 else:
-    raise FileNotFoundError("❌ Model file not found!")
+    raise FileNotFoundError("❌ Model file not found!!")
 
 # Initialize MediaPipe Face Detection
 mp_face_detection = mp.solutions.face_detection
