@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deepfake Detection Result</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .nav-bar a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 8px 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            transition: background 0.3s;
+        }
+        .nav-bar a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .profile-circle {
+            width: 40px;
+            height: 40px;
+            background: #000;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .profile-circle:hover {
+            transform: scale(1.1);
+        }
+
+        /* Result Box */
+        .result-box {
+            background: #000;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 400px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .real {
+            border: 3px solid #00cc00;
+            background: linear-gradient(135deg, #1a3c34, #000);
+        }
+        .fake {
+            border: 3px solid #ff3333;
+            background: linear-gradient(135deg, #3c1a1a, #000);
+        }
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #66b3ff;
+        }
+        p {
+            font-size: 20px;
+            margin: 10px 0;
+        }
+        p strong {
+            color: #99ccff;
+        }
+
+        /* Button */
+        .btn {
+            margin-top: 25px;
+            padding: 12px 25px;
+            background: #66b3ff;
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .btn:hover {
+            background: #99ccff;
+            transform: translateY(-3px);
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Uploaded File Styling */
+        .media-container {
+            margin: 20px 0;
+            max-width: 100%;
+        }
+        video, img {
+            width: 100%;
+            border-radius: 10px;
+            border: 2px solid #66b3ff;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('premium') }}">Premium</a>
+        {% if 'loggedin' in session %}
+            <a href="{{ url_for('profile') }}" class="profile-circle">{{ session['username'][0] }}</a>
+        {% else %}
+            <a href="{{ url_for('signin') }}" class="profile-circle">?</a>
+        {% endif %}
+    </div>
+
+    <!-- Result Box -->
+    <div class="result-box {{ 'real' if result == 'Real' else 'fake' }}">
+        <h1>Analysis Result</h1>
+        
+        <!-- Display Uploaded File -->
+        <div class="media-container">
+            {% if is_video %}
+                <video controls>
+                    <source src="{{ file_url }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            {% else %}
+                <img src="{{ file_url }}" alt="Uploaded Image">
+            {% endif %}
+        </div>
+
+        <p><strong>Result:</strong> {{ result }}</p>
+        <p><strong>Deepfake Score:</strong> {{ score }}%</p>
+
+        <a href="{{ url_for('index') }}"><button class="btn">Back to Home</button></a>
+    </div>
+</body>
+</html>

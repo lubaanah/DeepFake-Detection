@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deepfake Detector</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/429fd6bdb6.js" crossorigin="anonymous"></script>
+</head>
+<body class="bg-gray-900 text-white">
+     <!-- Navigation Bar -->
+<nav class="flex justify-between items-center p-4 bg-gray-800">
+    <div class="flex items-center">
+        <h1 class="text-xl font-bold text-white">Deepfake Detector</h1>
+        <button id="menu-btn" class="ml-4 p-2 text-white text-2xl hover:text-blue-400">☰</button>
+    </div>
+    <div class="flex gap-4">
+        <a href="#faq" class="hover:text-blue-400 text-white">FAQ</a>
+        <a href="{{ url_for('contact') }}" class="hover:text-blue-400 text-white">Contact Us</a>
+        <a href="{{ url_for('premium') }}" class="hover:text-blue-400">Premium</a>
+        
+        {% if session['loggedin'] %}
+        <div class="relative">
+            <a href="{{ url_for('profile') }}">
+                <div class="bg-blue-500 text-white font-bold w-10 h-10 flex items-center justify-center rounded-full cursor-pointer">
+                    {{ session['username'][0] | upper }}
+                </div>
+            </a>
+        </div>
+        {% else %}
+        <a href="{{ url_for('signin') }}">
+            <button class="bg-blue-500 text-white px-4 py-2 rounded">Login / Sign Up</button>
+        </a>
+        {% endif %}
+    </div>
+</nav>
+
+
+    <!-- Hamburger Menu -->
+    <div id="menu" class="fixed top-0 left-0 w-64 h-full bg-gray-800 text-white flex flex-col transform -translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="p-6"><a href="{{ url_for('signin') }}" class="hover:text-blue-400 font-semibold">🔑 Sign In</a></div>
+        <div class="p-6"><a href="{{ url_for('profile') }}" class="hover:text-blue-400">👤 Profile</a></div>
+        <div class="p-6"><a href="{{ url_for('premium') }}" class="hover:text-blue-400">💎 Premium (Pricing)</a></div>
+        <div class="p-6"><a href="{{ url_for('contact') }}" class="hover:text-blue-400">📞 Contact Us</a></div>
+        <div class="mt-auto border-t border-gray-600 p-6"><a href="/logout" class="text-red-400 hover:text-red-500 font-semibold">🚪 Sign Out</a></div>
+    </div>
+
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const menu = document.getElementById('menu');
+
+        menuBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            menu.classList.toggle('-translate-x-full');
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!menu.contains(event.target) && !menuBtn.contains(event.target)) {
+                menu.classList.add('-translate-x-full');
+            }
+        });
+    </script>
+
+    <!-- Centered AI Reverse Image Search Section -->
+    <section class="text-center py-12 bg-gray-800 text-white">
+        <h2 class="text-3xl font-bold">DeepFake Video/Image Detector</h2>
+        <p class="mt-4 text-gray-300 max-w-2xl mx-auto">
+            Deepfake Detector goes beyond merely finding matching images – it unlocks hidden connections.
+            From tracking origins to uncovering unseen patterns, use search by image like never before!
+        </p>
+    </section>
+
+    <!-- Image Showcase -->
+    <div class="mt-8 px-4 flex flex-col items-center">
+        <h2 class="text-2xl font-bold text-center mb-6">Deepfake Detection in Action</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <img src="/static/images/deepfake1.jpg" alt="Deepfake Example 1" class="w-full rounded-lg shadow-lg">
+            <img src="/static/images/deepfake2.jpg" alt="Deepfake Example 2" class="w-full rounded-lg shadow-lg">
+            <img src="/static/images/deepfake3.jpg" alt="Deepfake Example 3" class="w-full rounded-lg shadow-lg">
+            <img src="/static/images/deepfake4.jpg" alt="Deepfake Example 4" class="w-full rounded-lg shadow-lg">
+
+        </div>
+
+        <!-- Upload Title -->
+        <h2 class="text-4xl font-bold mt-10">Upload Video or Image</h2>
+    </div>
+
+    <!-- Upload Section -->
+<div class="flex flex-col items-center justify-center min-h-[600px] bg-gray-900 text-white">
+    <!-- Drag & Drop Upload Box -->
+    <form action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data" class="w-full max-w-2xl">
+        <label for="fileInput" class="w-full p-12 border-4 border-dashed border-gray-500 rounded-xl 
+            flex flex-col items-center justify-center cursor-pointer bg-gray-800 hover:bg-gray-700 transition">
+            <i class="fa-solid fa-image text-6xl text-blue-400 mb-6"></i>
+            <p class="text-2xl text-gray-300 font-semibold">
+                Drop, paste your file here or <span class="text-blue-400 underline">click to upload</span>.
+            </p>
+            <p class="text-lg text-gray-400 mt-2">Only JPG, JPEG, PNG, MP4 formats allowed</p>
+            <input type="file" id="fileInput" name="file" accept=".jpg,.jpeg,.png,.mp4" class="hidden" required>
+        </label>
+
+        <!-- File Name Display -->
+        <p id="file-name" class="mt-4 text-gray-300 text-lg"></p>
+
+        <!-- Analyze Button -->
+        <button type="submit" 
+            class="mt-6 bg-blue-500 text-white px-10 py-4 text-xl rounded-lg hover:bg-blue-600 transition w-full">
+            Analyze Video/Image
+        </button>
+    </form>
+</div>
+
+<!-- JavaScript to Show File Name -->
+<script>
+    document.getElementById("fileInput").addEventListener("change", function(event) {
+        const fileName = event.target.files[0] ? event.target.files[0].name : "";
+        document.getElementById("file-name").textContent = fileName ? "Selected File: " + fileName : "";
+    });
+</script>
+
+
+    <!-- How to Use Deepfake Detector? -->
+    <div class="mt-8 p-6 bg-gray-800 rounded-lg text-center text-white">
+        <h3 class="text-2xl font-bold mb-4">How to Use Deepfake Detector?</h3>
+        <p class="text-gray-400">Follow these three simple steps to analyze your media:</p>
+
+        <!-- Three Steps Section -->
+        <div class="mt-6 grid md:grid-cols-3 gap-6">
+            <!-- Step 1 -->
+            <div class="p-4 bg-gray-700 rounded-lg">
+                <i class="fas fa-upload text-3xl text-blue-400"></i>
+                <h4 class="font-semibold mt-2">Step 1: Upload</h4>
+                <p class="text-sm text-gray-300">Select an image or video file and upload it.</p>
+            </div>
+            <!-- Step 2 -->
+            <div class="p-4 bg-gray-700 rounded-lg">
+                <i class="fas fa-search text-3xl text-blue-400"></i>
+                <h4 class="font-semibold mt-2">Step 2: Analyze</h4>
+                <p class="text-sm text-gray-300">Click "Analyze" to process the file.</p>
+            </div>
+            <!-- Step 3 -->
+            <div class="p-4 bg-gray-700 rounded-lg">
+                <i class="fas fa-chart-line text-3xl text-blue-400"></i>
+                <h4 class="font-semibold mt-2">Step 3: View Results</h4>
+                <p class="text-sm text-gray-300">See the deepfake detection results with accuracy.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Benefits Section -->
+    <section class="p-8 bg-gray-800 text-white text-center">
+        <h2 class="text-3xl font-bold mb-6">How Deepfake Detector Benefits Its Users?</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-gray-700 p-6 rounded-lg shadow-md">
+                <i class="fa-solid fa-shield-halved text-blue-400 text-4xl mb-3"></i>
+                <h3 class="text-lg font-bold">Protect Against Misinformation</h3>
+                <p class="text-gray-300 mt-2">Our AI helps users verify images and videos to combat fake news.</p>
+            </div>
+            <div class="bg-gray-700 p-6 rounded-lg shadow-md">
+                <i class="fa-solid fa-eye text-blue-400 text-4xl mb-3"></i>
+                <h3 class="text-lg font-bold">Verify Authenticity</h3>
+                <p class="text-gray-300 mt-2">Easily check if a video has been altered or manipulated.</p>
+            </div>
+            <div class="bg-gray-700 p-6 rounded-lg shadow-md">
+                <i class="fa-solid fa-lock text-blue-400 text-4xl mb-3"></i>
+                <h3 class="text-lg font-bold">Ensure Privacy & Security</h3>
+                <p class="text-gray-300 mt-2">We do not store your uploaded files, ensuring your data remains private.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQs Section -->
+    <div id="faq" class="mt-12 p-6 bg-gray-800 rounded-lg text-center">
+        <h3 class="text-3xl font-bold mb-6">FAQs</h3>
+        <div class="text-left text-white space-y-8">
+            <div>
+                <p class="text-xl font-semibold">Q: Is this free to use?</p>
+                <p>A: Yes, our basic features are free for all users!</p>
+            </div>
+            <div>
+                <p class="text-xl font-semibold">Q: Does this work for videos and images?</p>
+                <p>A: Absolutely! You can analyze both video and image files.</p>
+            </div>
+            <div>
+                <p class="text-xl font-semibold">Q: Is my data secure?</p>
+                <p>A: 100%! We never store your uploaded files.</p>
+            </div>
+            <div>
+                <p class="text-xl font-semibold">Q: Can this detect all deepfakes?</p>
+                <p>A: While we aim for high accuracy, no system is perfect.</p>
+            </div>
+        </div>
+
+        <!-- Question Submission Form -->
+        <div class="mt-8 bg-gray-700 p-6 rounded-lg">
+            <h4 class="text-2xl font-bold mb-4">Have a question? Ask below!</h4>
+            <form>
+                <textarea class="w-full p-4 bg-gray-800 rounded-lg text-white mb-4" placeholder="Type your question here..."></textarea>
+                <button class="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 transition">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-800 text-white py-12 px-6">
+        <div class="text-center">
+            <h4 class="text-2xl font-bold mb-4">Deepfake Detector</h4>
+            <p class="text-gray-400 max-w-xl mx-auto">
+                Deepfake Detector specializes in image search and recognition, leveraging expertise in computer vision, pattern recognition, neural networks, and machine learning.
+            </p>
+        </div>
+        <div class="mt-8 flex flex-wrap justify-center gap-16">
+            <!-- Company Links -->
+            <div>
+                <h5 class="text-xl font-bold mb-4">Company</h5>
+                <ul>
+                    <li><a href="#" class="hover:text-blue-400">Home</a></li>
+                    <li><a href="{{ url_for('premium') }}" class="hover:text-blue-400">Pricing</a></li>
+                    <li><a href="{{ url_for('contact') }}" class="hover:text-blue-400">Contact Us</a></li>
+                </ul>
+            </div>
+            <!-- Legal Links -->
+            <div>
+                <h5 class="text-xl font-bold mb-4">Legals</h5>
+                <ul>
+                    <li><a href="#" class="hover:text-blue-400">Terms of Services</a></li>
+                    <li><a href="#" class="hover:text-blue-400">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-blue-400">Refund Policy</a></li>
+                    <li><a href="#" class="hover:text-blue-400">CSR</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
